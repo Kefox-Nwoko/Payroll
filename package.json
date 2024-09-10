@@ -1,0 +1,17 @@
+{
+  "name": "payroll",
+  "version": "1.0.0",
+  "description": "Automated payroll management system.",
+  "main": "index.js",
+  "repository": "https://github.com/Kefox-Nwoko/payroll.git",
+  "author": "Lenu-Kay",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.20.0",
+    "pg": "^8.12.0",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2"
+  }
+}
