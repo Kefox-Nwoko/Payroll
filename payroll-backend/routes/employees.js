@@ -1,74 +1,72 @@
-const express = require('express'); // Import the Express library
-const router = express.Router();  // Create a new router object
-const Employee = require('../models/Employee'); //  Import your Employee model
+const express = require('express');
+const { Pool } = require('pg');
+const router = express.Router();
+
+// Add environment variables for PostgreSQL connection
+const { DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT } = process.env;
+
+// Create a PostgreSQL pool
+const pool = new Pool({
+  user: DB_USER,
+  host: DB_HOST,
+  database: DB_NAME,
+  password: DB_PASSWORD,
+  port: DB_PORT,
+});
 
 // GET all employees
 router.get('/', async (req, res) => {
   try {
-    const employees = await Employee.find(); // Fetch all employees from your database
-    res.json(employees);
+    const result = await pool.query('SELECT * FROM employees');
+    res.json(result.rows);
   } catch (error) {
-    res.status(500).json({ message: error.message }); 
+    res.status(500).json({ message: error.message });
   }
 });
 
 // GET a single employee
-router.get('/:id', getEmployee, (req, res) => {
-  res.json(req.employee); // Send the employee object
+router.get('/:id', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM employees WHERE id = $1', [req.params.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Cannot find employee' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // POST create a new employee
 router.post('/', async (req, res) => {
-  const employee = new Employee({
-    name: req.body.name,
-    // ... other employee properties
-  });
-
   try {
-    const newEmployee = await employee.save();
-    res.status(201).json(newEmployee); // Send the new employee object
+    const { name /*, ... other employee properties */ } = req.body;
+    const result = await pool.query('INSERT INTO employees (name /*, ... other columns */) VALUES ($1 /*, ... other values */) RETURNING *', [name /*, ... other values */]);
+    res.status(201).json(result.rows[0]);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
 // PUT update an existing employee
-router.put('/:id', getEmployee, async (req, res) => {
-  if (req.body.name != null) {
-    req.employee.name = req.body.name;
-  }
-  // ... Update other properties
+router.put('/:id', async (req, res) => {
   try {
-    const updatedEmployee = await req.employee.save();
-    res.json(updatedEmployee);
+    const { name /*, ... other employee properties */ } = req.body;
+    const result = await pool.query('UPDATE employees SET name = $1 /*, ... other columns */ WHERE id = $2 RETURNING *', [name /*, ... other values */, req.params.id]);
+    res.json(result.rows[0]);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
 // DELETE an employee
-router.delete('/:id', getEmployee, async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    await req.employee.remove();
-    res.json({ message: 'Employee deleted' }); 
+    await pool.query('DELETE FROM employees WHERE id = $1', [req.params.id]);
+    res.json({ message: 'Employee deleted' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
-// Middleware to find an employee by ID
-async function getEmployee(req, res, next) {
-  let employee;
-  try {
-    employee = await Employee.findById(req.params.id);
-    if (employee == null) {
-      return res.status(404).json({ message: 'Cannot find employee' });
-    }
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-  req.employee = employee;
-  next();
-}
 
 module.exports = router;
