@@ -4,7 +4,7 @@
   "description": "Payroll management system backend API",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "payroll": "node payroll.js"
   },
   "author": "kefox",
   "license": "MIT",
