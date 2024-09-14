@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Grid, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import PayrollCalculator from '../components/PayrollCalculator';
 
 const EmployeeManagementPage = () => {
-  const [employees, setEmployees] = React.useState([]);
-  const [newEmployee, setNewEmployee] = React.useState({});
+  const [employees, setEmployees] = useState([]);
+  const [newEmployee, setNewEmployee] = useState({});
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const handleAddEmployee = () => {
     // placeholder add employee logic
@@ -20,6 +22,11 @@ const EmployeeManagementPage = () => {
     console.log('Employee deleted!');
   };
 
+  const handleCalculatePayroll = (employeeId) => {
+    // Call the PayrollCalculator component to calculate payroll
+    setSelectedEmployee(employeeId);
+  };
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -32,6 +39,7 @@ const EmployeeManagementPage = () => {
                 <TableCell>Role</TableCell>
                 <TableCell>Salary</TableCell>
                 <TableCell>Actions</TableCell>
+                <TableCell>Payroll</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -48,6 +56,14 @@ const EmployeeManagementPage = () => {
                     <Button variant="contained" color="secondary" onClick={handleDeleteEmployee}>
                       Delete
                     </Button>
+                    <Button variant="contained" color="primary" onClick={() => handleCalculatePayroll(employee.id)}>
+                      Calculate Payroll
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    {selectedEmployee === employee.id && (
+                      <PayrollCalculator employeeId={employee.id} />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
@@ -62,4 +78,10 @@ const EmployeeManagementPage = () => {
         <TextField label="Role" value={newEmployee.role} onChange={(e) => setNewEmployee({ ...newEmployee, role: e.target.value })} />
       </Grid>
       <Grid item xs={12}>
-        <TextField label="Salary" value
+        <TextField label="Salary" value={newEmployee.salary} onChange={(e) => setNewEmployee({ ...newEmployee, salary: e.target.value })} />
+      </Grid>
+    </Grid>
+  );
+};
+
+export default EmployeeManagementPage;

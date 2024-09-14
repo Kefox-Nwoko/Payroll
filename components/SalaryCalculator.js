@@ -1,16 +1,16 @@
 import React from 'react';
-import { Grid, TextField, Button } from '@mui/material';
+import { Grid, TextField, Button } from '@mui/material/Grid';
 
 const SalaryCalculator = () => {
   const [salary, setSalary] = React.useState(0);
   const [role, setRole] = React.useState('');
   const [bonus, setBonus] = React.useState(0);
   const [tax, setTax] = React.useState(0);
+  const [calculatedSalary, setCalculatedSalary] = React.useState(0);
 
   const calculateSalary = () => {
-    // placeholder calculation logic
     const calculatedSalary = salary + bonus - tax;
-    setSalary(calculatedSalary);
+    setCalculatedSalary(calculatedSalary);
   };
 
   return (
@@ -33,7 +33,7 @@ const SalaryCalculator = () => {
         </Button>
       </Grid>
       <Grid item xs={12}>
-        <h2>Calculated Salary: {salary}</h2>
+        <h2>Calculated Salary: {calculatedSalary}</h2>
       </Grid>
     </Grid>
   );
