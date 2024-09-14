@@ -2,7 +2,7 @@
   "name": "payroll-backend",
   "version": "1.0.0",
   "description": "Payroll management system backend API",
-  "main": "index.js",
+  "main": "backend/index.js",
   "scripts": {
     "payroll": "node payroll.js"
   },
